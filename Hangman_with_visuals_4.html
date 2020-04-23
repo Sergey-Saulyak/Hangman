@@ -3,11 +3,17 @@
   <head>
     <meta charset="UTF-8" />
 
-    <title>functions</title>
+    <title>Hangman</title>
   </head>
   <body>
+    <canvas id="canvas" width="200" height="200"></canvas>
+
     <script>
-      let pickWord = function () {
+      let canvas = document.getElementById("canvas"); //canvas -- DOM-object for element "#canvas"
+      let ctx = canvas.getContext("2d"); //ctx - object, drawing context
+      ctx.lineWidth = 4;
+
+      function pickWord() {
         let words = [
           "program",
           "makaka",
@@ -16,28 +22,27 @@
           "bazzinga",
           "programming",
         ];
-        let word = words[Math.floor(Math.random() * words.length)];
-        return word; // returns random word
-      };
 
-      let setupAnswerArray = function (word) {
+        return words[Math.floor(Math.random() * words.length)]; // returns random word
+      }
+
+      function setupAnswerArray(word) {
         let answerArray = [];
         for (let i = 0; i < word.length; i++) {
           answerArray[i] = "_";
         }
         return answerArray; // returns target array to current word
-      };
+      }
 
-      let showPlayerProgress = function (answerArray) {
+      function showPlayerProgress(answerArray) {
         alert(answerArray.join(" "));
-      }; // alerts the game status
+      } // alerts the game status
 
-      let getGuess = function () {
-        let guess = prompt("Guess the letter or press Cancel to exit."); // ask and returns player's guess
-        return guess;
-      };
+      function getGuess() {
+        return prompt("Guess the letter or press Cancel to exit.");
+      } // ask and returns player's guess
 
-      let updateGameState = function (guess, word, answerArray) {
+      function updateGameState(guess, word, answerArray) {
         let counter = 0; // counter of correct guesses
         for (let j = 0; j < word.length; j++) {
           if (word[j] === guess && answerArray[j] === "_") {
@@ -45,35 +50,68 @@
             counter++;
           }
         }
-        if (counter === 0) {
-          missCounter--; // counter of failed guesses
-
-          alert("Attempts to try: " + missCounter);
-        }
         return counter;
         // Updates answerArray according to player's (guess),
         // returns a number, indicates, how many times (guess)-letter
         // occurs in (word), to update remainingLetters
-      };
+      }
 
-      let showAnswerAndCongratulatePlayer = function (answerArray) {
-        alert("Congratulations! The word was: " + word);
-      }; // alerts congratulations and shows guessed word
+      function showAnswerAndCongratulatePlayer(answerArray) {
+        alert("Congratulations! The word was: " + answerArray.join(""));
+      } // alerts congratulations and shows guessed word
+
+      function drawHangman(missCounter) {
+        if (missCounter === 0) {
+          ctx.strokeRect(30, 10, 20, 20);
+        } else if (missCounter === 1) {
+          ctx.beginPath();
+          ctx.moveTo(40, 30);
+          ctx.lineTo(40, 70);
+          ctx.stroke();
+        } else if (missCounter === 2) {
+          ctx.beginPath();
+          ctx.moveTo(40, 50);
+          ctx.lineTo(20, 40);
+          ctx.stroke();
+        } else if (missCounter === 3) {
+          ctx.beginPath();
+          ctx.moveTo(40, 50);
+          ctx.lineTo(60, 40);
+          ctx.stroke();
+        } else if (missCounter === 4) {
+          ctx.beginPath();
+          ctx.moveTo(40, 70);
+          ctx.lineTo(20, 100);
+          ctx.stroke();
+        } else if (missCounter === 5) {
+          ctx.beginPath();
+          ctx.moveTo(60, 100);
+          ctx.lineTo(40, 70);
+          ctx.stroke();
+        }
+      }
 
       let word = pickWord(); // make a word
       let answerArray = setupAnswerArray(word); // answerArray - target array
       let remainingLetters = word.length; // remainingLetters - letters left to guess
-      let missCounter = word.length;
+      let missCounter = 0; //counter of incorrect guesses
+
       while (remainingLetters > 0) {
         showPlayerProgress(answerArray);
         let guess = getGuess(); // guess - gamer's answer
-        if (guess === null || missCounter === 0) {
+        if (guess === null) {
           break;
         } else if (guess.length !== 1) {
           alert("Enter only 1 letter!");
         } else {
-          let correctGuesses = updateGameState(guess, word, answerArray); // correctGuesses - number of matched letters
+          let correctGuesses = updateGameState(guess, word, answerArray); // correctGuesses - number of matched letters = counter
           remainingLetters -= correctGuesses;
+
+          if (correctGuesses === 0) {
+            // if (counter = 0) missCounter++ & Hangman part is drawing
+            drawHangman(missCounter);
+            missCounter++;
+          }
         }
       }
       showAnswerAndCongratulatePlayer(answerArray);
