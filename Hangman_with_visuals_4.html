@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <title>functions</title>
+  </head>
+  <body>
+    <script>
+      let pickWord = function () {
+        let words = [
+          "program",
+          "makaka",
+          "beauty",
+          "puncake",
+          "bazzinga",
+          "programming",
+        ];
+        let word = words[Math.floor(Math.random() * words.length)];
+        return word; // returns random word
+      };
+
+      let setupAnswerArray = function (word) {
+        let answerArray = [];
+        for (let i = 0; i < word.length; i++) {
+          answerArray[i] = "_";
+        }
+        return answerArray; // returns target array to current word
+      };
+
+      let showPlayerProgress = function (answerArray) {
+        alert(answerArray.join(" "));
+      }; // alerts the game status
+
+      let getGuess = function () {
+        let guess = prompt("Guess the letter or press Cancel to exit."); // ask and returns player's guess
+        return guess;
+      };
+
+      let updateGameState = function (guess, word, answerArray) {
+        let counter = 0; // counter of correct guesses
+        for (let j = 0; j < word.length; j++) {
+          if (word[j] === guess && answerArray[j] === "_") {
+            answerArray[j] = guess;
+            counter++;
+          }
+        }
+        if (counter === 0) {
+          missCounter--; // counter of failed guesses
+
+          alert("Attempts to try: " + missCounter);
+        }
+        return counter;
+        // Updates answerArray according to player's (guess),
+        // returns a number, indicates, how many times (guess)-letter
+        // occurs in (word), to update remainingLetters
+      };
+
+      let showAnswerAndCongratulatePlayer = function (answerArray) {
+        alert("Congratulations! The word was: " + word);
+      }; // alerts congratulations and shows guessed word
+
+      let word = pickWord(); // make a word
+      let answerArray = setupAnswerArray(word); // answerArray - target array
+      let remainingLetters = word.length; // remainingLetters - letters left to guess
+      let missCounter = word.length;
+      while (remainingLetters > 0) {
+        showPlayerProgress(answerArray);
+        let guess = getGuess(); // guess - gamer's answer
+        if (guess === null || missCounter === 0) {
+          break;
+        } else if (guess.length !== 1) {
+          alert("Enter only 1 letter!");
+        } else {
+          let correctGuesses = updateGameState(guess, word, answerArray); // correctGuesses - number of matched letters
+          remainingLetters -= correctGuesses;
+        }
+      }
+      showAnswerAndCongratulatePlayer(answerArray);
+    </script>
+  </body>
+</html>
